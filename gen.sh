@@ -23,6 +23,7 @@ generate_toc() {
     local home_href="$2"
     local home_label="$3"
     local index_label="$4"
+    local switcher="$5"
 
     local toc_items
     toc_items=$(echo "$html_content" | grep -E '^<h2 id="[^"]*">' | sed -E 's|<h2 id="([^"]*)">([^<]*)</h2>|  <li><a href="#\1">\2</a></li>|')
@@ -34,6 +35,7 @@ generate_toc() {
   <ul>
 $toc_items
   </ul>
+  ${switcher}
 </nav>"
     fi
 }
@@ -42,9 +44,9 @@ lang_switcher() {
     local lang="$1"
 
     if [ "$lang" = "zh" ]; then
-        echo "<p class=\"lang-switch\"><span class=\"current\">中文</span><span class=\"sep\">·</span><a href=\"en.html\" hreflang=\"en\">EN</a></p>"
+        echo "<p class=\"lang-switch\"><a href=\"en.html\" hreflang=\"en\">EN</a></p>"
     else
-        echo "<p class=\"lang-switch\"><a href=\"index.html\" hreflang=\"zh-CN\">中文</a><span class=\"sep\">·</span><span class=\"current\">EN</span></p>"
+        echo "<p class=\"lang-switch\"><a href=\"index.html\" hreflang=\"zh-CN\">中文</a></p>"
     fi
 }
 
@@ -80,7 +82,6 @@ generate_html_page() {
     local lang="$2"
     local content="$3"
     local toc="$4"
-    local switcher="$5"
 
     cat << EOF
 <!DOCTYPE html>
@@ -96,7 +97,6 @@ generate_html_page() {
 <body>
 <div class="container">
     <div class="main-content">
-${switcher}
 ${content}
     </div>
     <div class="sidebar">
@@ -132,13 +132,13 @@ build_page() {
     local html_content
     html_content=$(convert_to_html "$source_file" "$subtitle" "$update_label" "$update_time")
 
-    local toc
-    toc=$(generate_toc "$html_content" "$home_href" "$home_label" "$index_label")
-
     local switcher
     switcher=$(lang_switcher "$page_lang")
 
-    generate_html_page "$title" "$html_lang" "$html_content" "$toc" "$switcher" > "$output_file"
+    local toc
+    toc=$(generate_toc "$html_content" "$home_href" "$home_label" "$index_label" "$switcher")
+
+    generate_html_page "$title" "$html_lang" "$html_content" "$toc" > "$output_file"
     print_success "Generated $output_file successfully!"
 }
 
