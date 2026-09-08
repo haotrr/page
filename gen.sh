@@ -3,38 +3,34 @@
 #==============================================================================
 # Markdown to HTML Conversion Script
 #==============================================================================
-# Purpose: Convert notes.md to index.html with update timestamp
+# Purpose: Convert notes.md / notes-en.md to index.html / en.html
 # Dependencies: pandoc (brew install pandoc)
 #==============================================================================
 
 set -e  # Exit immediately on error
 
-# Constants
-readonly SOURCE_FILE="notes.md"
-readonly OUTPUT_FILE="index.html"
 readonly STYLES_FILE="styles.css"
 
-# Helper functions
 print_info() { echo "📝 $1"; }
 print_success() { echo "✅ $1"; }
 
-# Get current date for update timestamp
 get_current_date() {
     date '+%Y/%m/%d'
 }
 
-# Generate table of contents for h2 headings
 generate_toc() {
     local html_content="$1"
+    local home_href="$2"
+    local home_label="$3"
+    local index_label="$4"
 
-    # Extract h2 headings and their IDs
     local toc_items
     toc_items=$(echo "$html_content" | grep -E '^<h2 id="[^"]*">' | sed -E 's|<h2 id="([^"]*)">([^<]*)</h2>|  <li><a href="#\1">\2</a></li>|')
 
     if [ -n "$toc_items" ]; then
         echo "<nav class=\"toc\">
-  <h3>Index</h3>
-  <ul><li><a href="#">Home</a></li></ul>
+  <h3>${index_label}</h3>
+  <ul><li><a href=\"${home_href}\">${home_label}</a></li></ul>
   <ul>
 $toc_items
   </ul>
@@ -42,68 +38,65 @@ $toc_items
     fi
 }
 
-# Convert markdown to HTML and add update timestamp
-convert_to_html() {
-    local title="$1"
-    local update_time="$2"
+lang_switcher() {
+    local lang="$1"
 
-    # Convert markdown to HTML content
-    local html_content
-    html_content=$(pandoc "$SOURCE_FILE" --from markdown --to html --no-highlight --wrap=none)
-
-    # Generate table of contents for h2 headings (before adding update time)
-    local toc
-    toc=$(generate_toc "$html_content")
-
-    # Add update timestamp after H1 if exists, otherwise add title and timestamp
-    if echo "$html_content" | grep -q "^<h1"; then
-        # Insert update time after existing H1
-        html_content=$(echo "$html_content" | awk -v update="$update_time" '
-            /<\/h1>/ && !inserted {
-                print $0
-                print "<p>当然，我在扯淡。</p>"
-                print "<p class=\"update-time\">Updated: " update "</p>"
-                inserted = 1
-                next
-            }
-            { print }
-        ')
+    if [ "$lang" = "zh" ]; then
+        echo "<p class=\"lang-switch\"><span class=\"current\">中文</span><span class=\"sep\">·</span><a href=\"en.html\" hreflang=\"en\">EN</a></p>"
     else
-        # Add title and update time at the beginning
-        html_content="<h1>${title}</h1>
-<p>当然，我在扯淡。</p>
-<p class=\"update-time\">Updated: ${update_time}</p>
-${html_content}"
+        echo "<p class=\"lang-switch\"><a href=\"index.html\" hreflang=\"zh-CN\">中文</a><span class=\"sep\">·</span><span class=\"current\">EN</span></p>"
     fi
+}
 
-    # Process footer styling - replace <center> tags with styled paragraphs
+convert_to_html() {
+    local source_file="$1"
+    local subtitle="$2"
+    local update_label="$3"
+    local update_time="$4"
+
+    local html_content
+    html_content=$(pandoc "$source_file" --from markdown --to html --syntax-highlighting=none --wrap=none)
+
+    html_content=$(echo "$html_content" | awk -v subtitle="$subtitle" -v label="$update_label" -v update="$update_time" '
+        /<\/h1>/ && !inserted {
+            print $0
+            print "<p>" subtitle "</p>"
+            print "<p class=\"update-time\">" label ": " update "</p>"
+            inserted = 1
+            next
+        }
+        { print }
+    ')
+
     html_content=$(echo "$html_content" | sed 's|<center>|<p class="footer-quote">|g')
     html_content=$(echo "$html_content" | sed 's|</center>|</p>|g')
-
     html_content=$(echo "$html_content" | perl -pe 's/<h3([^>]*)>/<h3\1> ♦ /g')
 
-    # Return content only, TOC will be passed separately
     echo "$html_content"
 }
 
-# Generate complete HTML page
 generate_html_page() {
     local title="$1"
-    local content="$2"
-    local toc="$3"
+    local lang="$2"
+    local content="$3"
+    local toc="$4"
+    local switcher="$5"
 
     cat << EOF
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="${lang}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title}</title>
     <link rel="stylesheet" href="${STYLES_FILE}">
+    <link rel="alternate" hreflang="zh-CN" href="index.html">
+    <link rel="alternate" hreflang="en" href="en.html">
 </head>
 <body>
 <div class="container">
     <div class="main-content">
+${switcher}
 ${content}
     </div>
     <div class="sidebar">
@@ -115,18 +108,43 @@ ${toc}
 EOF
 }
 
-# Main function
-main() {
-    print_info "Converting $SOURCE_FILE to $OUTPUT_FILE..."
+build_page() {
+    local source_file="$1"
+    local output_file="$2"
+    local html_lang="$3"
+    local page_lang="$4"
+    local subtitle="$5"
+    local update_label="$6"
+    local home_href="$7"
+    local home_label="$8"
+    local index_label="$9"
+    local title="Aha, I'm Just Kidding."
+    local update_time
+    update_time=$(get_current_date)
 
-    # Check dependencies and files
-    if ! command -v pandoc >/dev/null 2>&1; then
-        echo "❌ Error: pandoc is required (brew install pandoc)"
+    if [ ! -f "$source_file" ]; then
+        echo "❌ Error: $source_file not found"
         exit 1
     fi
 
-    if [ ! -f "$SOURCE_FILE" ]; then
-        echo "❌ Error: $SOURCE_FILE not found"
+    print_info "Converting $source_file to $output_file..."
+
+    local html_content
+    html_content=$(convert_to_html "$source_file" "$subtitle" "$update_label" "$update_time")
+
+    local toc
+    toc=$(generate_toc "$html_content" "$home_href" "$home_label" "$index_label")
+
+    local switcher
+    switcher=$(lang_switcher "$page_lang")
+
+    generate_html_page "$title" "$html_lang" "$html_content" "$toc" "$switcher" > "$output_file"
+    print_success "Generated $output_file successfully!"
+}
+
+main() {
+    if ! command -v pandoc >/dev/null 2>&1; then
+        echo "❌ Error: pandoc is required (brew install pandoc)"
         exit 1
     fi
 
@@ -135,32 +153,8 @@ main() {
         exit 1
     fi
 
-    # Extract title and get current date
-    local title
-    title="Aha, I'm Just Kidding."
-    local update_time
-    update_time=$(get_current_date)
-
-    print_info "Title: $title"
-    print_info "Update time: $update_time"
-
-    # Convert markdown to HTML
-    local html_content
-    html_content=$(convert_to_html "$title" "$update_time")
-
-    # Generate TOC from the HTML content
-    local toc
-    toc=$(generate_toc "$html_content")
-
-    # Generate complete HTML page
-    local full_html
-    full_html=$(generate_html_page "$title" "$html_content" "$toc")
-
-    # Save to file
-    echo "$full_html" > "$OUTPUT_FILE"
-
-    print_success "Generated $OUTPUT_FILE successfully!"
+    build_page "notes.md" "index.html" "zh-CN" "zh" "当然，我在扯淡。" "更新" "#" "首页" "目录"
+    build_page "notes-en.md" "en.html" "en" "en" "Of course, I'm just kidding." "Updated" "en.html" "Home" "Index"
 }
 
-# Run main function
 main "$@"

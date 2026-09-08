@@ -210,6 +210,31 @@ figcaption:is([title^="http"], [alt^="http"]) {
     }
 }
 
+/* Language switch — keep visible on mobile (sidebar is hidden <1024px) */
+.lang-switch {
+    text-align: right;
+    font-size: 12px;
+    margin: 0 0 8px;
+    color: #666;
+}
+
+.lang-switch .sep {
+    margin: 0 8px;
+    color: #ccc;
+}
+
+.lang-switch .current {
+    color: #222;
+}
+
+.lang-switch a {
+    color: #4a90e2;
+}
+
+.lang-switch a:visited {
+    color: #4a90e2;
+}
+
 /* Update timestamp and footer styles */
 .update-time {
     color: #666;
