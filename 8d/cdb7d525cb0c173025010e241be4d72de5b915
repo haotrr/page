@@ -1,0 +1,26 @@
+gen.sh
+  s_52ce32b54a7b2a::t_a66a5b5984b4e4 26,38,47,49
+  s_52ce32b54a7b2a::t_52356800f2e1f5 138-141
+index.html
+  s_52ce32b54a7b2a::t_7997a466934c8f 240
+styles.css
+  s_52ce32b54a7b2a::t_c917f492a9f75a 283-294
+en.html
+  s_52ce32b54a7b2a::t_7997a466934c8f 218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "8dcdb7d525cb0c173025010e241be4d72de5b915",
+  "prompts": {},
+  "sessions": {
+    "s_52ce32b54a7b2a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "9e40a178-09bd-4eb9-8721-b659a7ea916c",
+        "model": "grok-4.6"
+      },
+      "human_author": "haotrr <qinhao@qimao.com>"
+    }
+  }
+}
