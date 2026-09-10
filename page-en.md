@@ -265,6 +265,7 @@ If you’re only consuming right now, ask yourself: **What did I create today?**
 
 Hi, I’m 在下李思普之弟 / haotrr(dot) / dj gandalf, a programmer living in Shanghai. I like rock ’n’ roll and jazz, and of course I like reading.
 
+- Homepage: [haotrr.com](https://haotrr.com)
 - Weibo: [在下李思普之弟](https://weibo.com/u/1762280947)
 - GitHub: [haotrr](https://github.com/haotrr)
 - Twitter/X: [haotrrdot](https://x.com/haotrrdot)

@@ -284,6 +284,7 @@ visit: [source](https://dilbertblog.typepad.com/the_dilbert_blog/2007/06/the_day
 
 你好，我是李思普之弟 / haotrr(dot) / dj gandalf，一名住在上海的程序员。我喜欢摇滚乐和爵士乐，当然还有阅读。
 
+- 主页: [haotrr.com](https://haotrr.com)
 - 微博: [在下李思普之弟](https://weibo.com/u/1762280947)
 - GitHub: [haotrr](https://github.com/haotrr)
 - Twitter/X: [haotrrdot](https://x.com/haotrrdot)
