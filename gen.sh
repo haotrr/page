@@ -3,7 +3,7 @@
 #==============================================================================
 # Markdown to HTML Conversion Script
 #==============================================================================
-# Purpose: Convert notes.md / notes-en.md to index.html / en.html
+# Purpose: Convert page.md / page-en.md to index.html / en.html
 # Dependencies: pandoc (brew install pandoc)
 #==============================================================================
 
@@ -153,8 +153,8 @@ main() {
         exit 1
     fi
 
-    build_page "notes.md" "index.html" "zh-CN" "zh" "当然，我在扯淡。" "更新" "#" "首页" "目录"
-    build_page "notes-en.md" "en.html" "en" "en" "Of course, I'm just kidding." "Updated" "en.html" "Home" "Index"
+    build_page "page.md" "index.html" "zh-CN" "zh" "当然，我在扯淡。" "更新" "#" "首页" "目录"
+    build_page "page-en.md" "en.html" "en" "en" "Of course, I'm just kidding." "Updated" "en.html" "Home" "Index"
 }
 
 main "$@"
