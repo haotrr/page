@@ -1,0 +1,25 @@
+en.html
+  s_0cbbdbfc398ce0::t_36010c5d457389 195
+page.md
+  s_0cbbdbfc398ce0::t_622a98cd123863 287
+index.html
+  s_0cbbdbfc398ce0::t_36010c5d457389 217
+page-en.md
+  s_0cbbdbfc398ce0::t_bdeee8932195c5 268
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b92749999d40d2170b88d7c810dd530581cde621",
+  "prompts": {},
+  "sessions": {
+    "s_0cbbdbfc398ce0": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "ab8535bc-4c63-4ed8-8208-1eb092a60e11",
+        "model": "grok-4.6"
+      },
+      "human_author": "haotrr <qinhao@qimao.com>"
+    }
+  }
+}
